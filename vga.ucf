@@ -1,9 +1,12 @@
-NET "MainClkSrc" TNM = "MainClkSrc";
-NET "MainClkSrc" LOC = P126;
-TIMESPEC TS_MainClkSrc = PERIOD "MainClkSrc" 100 MHz HIGH 50%;
+NET "MainClk" TNM = "MainClk";
+NET "MainClk" LOC = P126;
+TIMESPEC TS_MainClk = PERIOD "MainClk" 100 MHz HIGH 50%;
 
-NET "PixelClkSrc" TNM_NET = PixelClkSrc;
-TIMESPEC TS_PixelClkSrc = PERIOD "PixelClkSrc" TS_MainClkSrc / 4 HIGH 50%;
+NET "PixelClk" TNM_NET = PixelClk;
+TIMESPEC TS_PixelClk = PERIOD "PixelClk" TS_MainClk / 4 HIGH 50%;
+
+NET "MemClk" TNM_NET = MemClk;
+TIMESPEC TS_MemClk = PERIOD "MemClk" TS_MainClk * 1 HIGH 50%;
 
 # P1
 NET "MemAddr[9]"                LOC = P35       | IOSTANDARD = LVCMOS33 |DRIVE = 8 |SLEW = FAST ;    # IO_L1P_3           	        Sch = GPIO-P18 

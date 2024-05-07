@@ -29,20 +29,20 @@ reg[2:0] BitCnt = 3'b000;
 reg[7:0] Shift = 8'b00000000;
 
 always @(posedge Clk) begin
-	SclkSample <= { SclkSample[1:0], Sclk };
-	CSelSample <= { CSelSample[1:0], CSel };
-	MosiSample <= {MosiSample[0], Mosi};
+    SclkSample <= { SclkSample[1:0], Sclk };
+    CSelSample <= { CSelSample[1:0], CSel };
+    MosiSample <= { MosiSample[0], Mosi };
 
     if (CSelFall) BitCnt <= 3'b000;
-	else if (SclkRise) begin
-	    BitCnt <= BitCnt + 3'b001;
-		Shift <= { Shift[6:0], MosiBit };
-	end
+    else if (SclkRise) begin
+        BitCnt <= BitCnt + 3'b001;
+        Shift <= { Shift[6:0], MosiBit };
+    end
 
-	if (~CSelActive && (BitCnt == 3'b000)) begin
-	    ByteRecv <= 1'b1;
+    if (~CSelActive && (BitCnt == 3'b000)) begin
+        ByteRecv <= 1'b1;
         ByteOut <= Shift;
-	end else ByteRecv <= 1'b0;
+    end else ByteRecv <= 1'b0;
 end
 
 endmodule

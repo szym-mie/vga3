@@ -4,8 +4,8 @@
 
 module clksrc #(
     parameter CLKIN_PERIOD=10, // in ns
-	parameter CLK_DIV=2,
-	parameter CLK_MUL=4
+    parameter CLK_DIV=2,
+    parameter CLK_MUL=4
 ) (
     input wire ClkInIBufg,
     output wire ClkOutSrc
@@ -24,11 +24,11 @@ assign DcmRst = DcmClkFxStopped & ~DcmLocked;
 
 DCM_SP #(
     .CLKIN_PERIOD(CLKIN_PERIOD),
-    .CLK_FEEDBACK("NONE"),
+    .CLK_FEEDBACK("1X"),
     .CLKDV_DIVIDE(2.0), // not used
     .CLKFX_MULTIPLY(CLK_MUL),
     .CLKFX_DIVIDE(CLK_DIV)
-) MemClkDcmInst (
+) ClkDcmInst (
     .CLKIN(ClkInIBufg),
     .CLKFB(1'b0),
     .RST(DcmRst),

@@ -4,7 +4,7 @@
 
 module seqfifo #( 
     parameter BUFSIZE = 16, // buffer size
-    parameter STRIDE = 1, // stride of range elements
+    parameter STRIDE = 1'b1, // stride of range elements
     parameter IWIDTH = 4, // buffer index width
     parameter WWIDTH = 8 // memory word width
 ) (
@@ -19,20 +19,19 @@ module seqfifo #(
 );
 
 reg[WWIDTH-1:0] DataStart;
-reg[IWIDTH-1:0] OutIndex = 1'b0;
+reg[IWIDTH-1:0] IndexOut = 1'b0;
 
-assign IsFull = OutIndex == 1'b0;
-assign IsEmpty = OutIndex == BUFSIZE - 1;
+assign IsFull = IndexOut == 1'b0;
+assign IsEmpty = IndexOut == (BUFSIZE - 1'b1);
 
-always @(posedge ClkIn) begin
-    DataStart <= DataIn;
-    OutIndex = 1'b0;
-end
+always @(posedge ClkIn) DataStart <= DataIn;
 
-always @(posedge ClkOut) begin
-    if (!IsEmpty) begin
-        DataOut <= OutIndex ? DataOut + STRIDE : DataStart;
-        OutIndex <= OutIndex + 1'b1;
+always @(posedge ClkIn or posedge ClkOut) begin
+    if (ClkIn) begin
+        IndexOut <= 1'b0;
+    end else if (ClkOut && !IsEmpty) begin
+        DataOut <= IndexOut ? DataOut + STRIDE : DataStart;
+        IndexOut <= IndexOut + 1'b1;
     end
 end
 

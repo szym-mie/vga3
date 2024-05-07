@@ -4,8 +4,8 @@
 
 module fifo #(
     parameter BUFSIZE = 16, // buffer size
-    parameter IWIDTH = 4, // buffer index width
-    parameter WWIDTH = 8 // memory word width
+    parameter IWIDTH = 4,   // buffer index width
+    parameter WWIDTH = 8    // memory word width
 ) (
     input wire[WWIDTH-1:0] DataIn,
     output reg[WWIDTH-1:0] DataOut,
@@ -18,22 +18,22 @@ module fifo #(
 );
 
 reg[WWIDTH-1:0] Buffer[BUFSIZE-1:0];
-reg[IWIDTH-1:0] InIndex = 1'b0, OutIndex = 1'b0;
+reg[IWIDTH-1:0] IndexIn = 1'b0, IndexOut = 1'b0;
 
-assign IsFull = InIndex + 1 == OutIndex;
-assign IsEmpty = InIndex == OutIndex;
+assign IsFull = IndexIn + 1'b1 == IndexOut;
+assign IsEmpty = IndexIn == IndexOut;
 
 always @(posedge ClkIn) begin
     if (!IsFull) begin
-        Buffer[InIndex] <= DataIn;
-        InIndex <= InIndex < BUFSIZE-1 ? InIndex + 1 : 0;
+        Buffer[IndexIn] <= DataIn;
+        IndexIn <= (IndexIn == BUFSIZE-1) ? 1'b0 : IndexIn + 1'b1;
     end
 end
 
 always @(posedge ClkOut) begin
     if (!IsEmpty) begin
-	    DataOut <= Buffer[OutIndex];
-        OutIndex <= OutIndex < BUFSIZE-1 ? OutIndex + 1 : 0;
+        DataOut <= Buffer[IndexOut];
+        IndexOut <= (IndexOut == BUFSIZE-1) ? 1'b0 : IndexOut + 1'b1;
     end
 end
 

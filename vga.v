@@ -7,22 +7,22 @@
 `include "vcmdv2.v"
 `include "vmmu.v"
 
-`define ADDR_WIDTH 19
-`define DATA_WDITH 8
-`define PCNT_WIDTH 10
-`define VOUT_WIDTH 6
+`define ADDR_WIDTH 19      // address bit width
+`define DATA_WIDTH 8       // data bit width
+`define PCNT_WIDTH 10      // pixel count bit width
+`define VOUT_WIDTH 6       // video out bit width
 
-`define MAIN_CLK_PERIOD 10
+`define MAIN_CLK_PERIOD 10 // main clock period in ns
 
-// Top-level VGA module
+// top-level VGA module
 
 module vga (
-    input wire MainClkSrc,
-    output wire[ADDR_WIDTH-1:0] MemAddr,
-    inout wire[DATA_WDITH-1:0] MemData,
+    input wire MainClk,
+    output wire[`ADDR_WIDTH-1:0] MemAddr,
+    inout wire[`DATA_WIDTH-1:0] MemData,
     output wire MemWE,
     output wire MemOE,
-    output wire[VOUT_WIDTH-1:0] ColorOut,
+    output wire[`VOUT_WIDTH-1:0] ColorOut,
     output wire HSyncOut,
     output wire VSyncOut,
     input wire Sclk,
@@ -35,7 +35,7 @@ wire PixelClk;
 wire MemClk;
 
 IBUFG MainClkIbufgInst(
-    .I(MainClkSrc),
+    .I(MainClk),
     .O(MainClkIBufg)
 );
 
@@ -46,7 +46,7 @@ clksrc #(
     .CLK_MUL(2)
 ) PixelClkSrc (
     .ClkInIBufg(MainClkIBufg),
-    .ClkOutSrc(PixelClkSrc)
+    .ClkOutSrc(PixelClk)
 );
 
 // memory clock using synthesized clock@200MHz
@@ -56,12 +56,12 @@ clksrc #(
     .CLK_MUL(4)
 ) MemClkSrc (
     .ClkInIBufg(MainClkIBufg),
-    .ClkOutSrc(MemClkSrc)
+    .ClkOutSrc(MemClk)
 );
 
-wire[PCNT_WIDTH-1:0] PixelCnt;
-wire[PCNT_WIDTH-1:0] LineCnt;
-wire[ADDR_WIDTH-1:0] PackReadAddr;
+wire[`PCNT_WIDTH-1:0] PixelCnt;
+wire[`PCNT_WIDTH-1:0] LineCnt;
+wire[`ADDR_WIDTH-1:0] PackReadAddr;
 wire PackReadAddrReq;
 wire IsActHorz;
 wire IsActVert;
@@ -70,30 +70,31 @@ wire Blank;
 vctl #(
     .XWIDTH(`PCNT_WIDTH),
     .YWIDTH(`PCNT_WIDTH),
+    .AWIDTH(`ADDR_WIDTH),
     .XMAX(799),
     .YMAX(524),
     .HDMIN(3),
     .HDMAX(643),
     .VDMIN(799),
-	.VDMAX(479)
+    .VDMAX(479)
 ) VideoCtl (
     .PixelClk(PixelClk),
-    .PixelCounter(PixelCnt),
-    .LineCounter(LineCnt),
+    .PixelCnt(PixelCnt),
+    .LineCnt(LineCnt),
     .AddrOut(PackReadAddr),
     .AddrClkOut(PackReadAddrReq),
     .IsActHorz(IsActHorz),
-	.IsActVert(IsActVert)
+    .IsActVert(IsActVert)
 );
 
 
 vsig #(
     .XWIDTH(`PCNT_WIDTH),
     .YWIDTH(`PCNT_WIDTH),
-	.HSMIN(661),
-	.HSMAX(757),
-	.VSMIN(491),
-	.VSMAX(493)
+    .HSMIN(661),
+    .HSMAX(757),
+    .VSMIN(491),
+    .VSMAX(493)
 ) VideoSig (
     .PixelClk(PixelClk),
     .PixelCnt(PixelCnt),
@@ -105,56 +106,60 @@ vsig #(
     .Blank(Blank)
 );
 
-wire SpiByteRecv;
-wire[DATA_WDITH-1:0] SpiByte;
+wire SPIByteRecv;
+wire[`DATA_WIDTH-1:0] SPIByte;
 
-wire[DATA_WDITH-1:0] ReadData;
-wire[DATA_WDITH-1:0] _ReadData;
+wire[`DATA_WIDTH-1:0] ReadData;
+wire[`DATA_WIDTH-1:0] _ReadData;
 wire ReadRdy;
 wire _ReadRdy;
 
 wire WriteClkOut;
-wire[DATA_WDITH-1:0] WriteData;
-wire[ADDR_WIDTH-1:0] WriteAddr;
+wire[`DATA_WIDTH-1:0] WriteData;
+wire[`ADDR_WIDTH-1:0] WriteAddr;
 
-spi Spi (
+spi SPI (
     .Clk(MemClk),
     .Sclk(Sclk),
-	.Mosi(Mosi),
-	.CSel(CSel),
-	.ByteRecv(SpiByteRecv),
-	.ByteOut(SpiByte)
+    .Mosi(Mosi),
+    .CSel(CSel),
+    .ByteRecv(SPIByteRecv),
+    .ByteOut(SPIByte)
 );
 
 // using version 2
 vcmdv2 #(
     .AWIDTH(`ADDR_WIDTH),
-    .DWIDTH(`DATA_WDITH)
+    .DWIDTH(`DATA_WIDTH)
 ) VideoCmd (
-	.ByteClkIn(SpiByteRecv),
-    .ByteIn(SpiByte),
-	.DataModeEnable(1'b1),
+    .ByteClkIn(SPIByteRecv),
+    .ByteIn(SPIByte),
+    .DataModeEnable(1'b1),
     .DataClkOut(WriteClkOut),
-	.AddrOut(WriteAddr)
+    .AddrOut(WriteAddr)
 );
 
-assign WriteData = SpiByte;
+assign WriteData = SPIByte;
 
-wire PixelReadData;
+wire[`DATA_WIDTH-1:0] PixelReadData;
 wire PixelReadDataClk;
 
+/*
 wire WriteReqOverflow;
 wire ReadReqOverflow;
+*/
 wire NoReadData;
 
-assign PixelReadDataClk = !NoReadData ? MemClk : 1'b0;
+assign PixelReadDataClk = MemClk;
 
 vmmu #(
     .WRBUFSIZE(16),
+    .WRIWIDTH(4),
     .RDBUFSIZE(3),
-    .IWIDTH(4),
+    .RDIWIDTH(2),
+    .RDSTRIDE(1'b1),
     .AWIDTH(`ADDR_WIDTH),
-    .DWIDTH(`DATA_WDITH)
+    .DWIDTH(`DATA_WIDTH)
 ) VMMU (
     .MemClk(MemClk),
 
@@ -166,9 +171,12 @@ vmmu #(
     .PushReadReq(PackReadAddrReq),
     .ReadDataOut(PixelReadData),
     .ReadDataClkOut(PixelReadDataClk),
-
+/*
     .WriteReqQueueFull(WriteReqOverflow),
     .ReadReqQueueFull(ReadReqOverflow),
+*/
+    .WriteReqQueueFull(),
+    .ReadReqQueueFull(),
     .ReadDataQueueEmpty(NoReadData),
 
     .MemAddrPort(MemAddr),
@@ -177,9 +185,10 @@ vmmu #(
     .MemOutputEnable(MemOE)
 );
 
+// FIXME: add signal to check if new data is present
 vbuf #(
     .AWIDTH(`ADDR_WIDTH),
-    .DWIDTH(`DATA_WDITH)
+    .DWIDTH(`DATA_WIDTH)
 ) VideoBuf (
     .PixelClk(PixelClk), 
     .Blank(Blank),
@@ -188,19 +197,5 @@ vbuf #(
     .ByteClkIn(PixelReadDataClk),
     .VideoOut(ColorOut)
 );
-
-// TODO: remove
-/*
-always @(posedge ReadRdy) begin
-	 if (WriteBufferIndex < 2)
-	     WriteBufferIndex <= WriteBufferIndex + 1'b1;
-	 else
-	     WriteBufferIndex <= 1'b0;
-		  
-	 // if (PixelCounter <= 640) ReadAddr <= ReadAddr + 1'b1;
-    if (LineCounter >= 480) ReadAddr <= 1'b0;
-	 else ReadAddr <= ReadAddr + 1'b1;
-end
-*/
 
 endmodule

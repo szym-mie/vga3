@@ -12,11 +12,13 @@
 // On no requests stays idle, disconnects memory outputs
 
 module vmmu #(
-    parameter WRBUFSIZE = 8, // write buffer size
-    parameter RDBUFSIZE = 8, // read buffer size
-    parameter IWIDTH = 4, // buffer index width
-    parameter AWIDTH = 18, // memory address width
-    parameter DWIDTH = 8 // memory data width
+    parameter WRBUFSIZE = 8,   // write buffer size
+    parameter WRIWIDTH = 3,    // write index size
+    parameter RDBUFSIZE = 8,   // read buffer size
+    parameter RDIWIDTH = 3,    // read index size
+    parameter RDSTRIDE = 1'b1, // read stride size
+    parameter AWIDTH = 18,     // memory address width
+    parameter DWIDTH = 8       // memory data width
 ) (
     // memory clock
     input wire MemClk,
@@ -79,16 +81,11 @@ reg PopWriteReq; // process write request
 // internal signal for arbiter
 wire WriteReqQueueEmpty;
 
-// unused FIFO signal wires
-wire _WriteDataFull;
-wire _WriteDataEmpty;
-wire _ReadDataFull;
-wire _ReadDataEmpty;
-
 // write FIFOs
 
 fifo #(
     .BUFSIZE(WRBUFSIZE),
+     .IWIDTH(WRIWIDTH),
     .WWIDTH(DWIDTH)
 ) WriteDataFIFO (
     .DataIn(WriteDataIn),
@@ -97,12 +94,13 @@ fifo #(
     .ClkIn(PushWriteReq),
     .ClkOut(PopWriteReq),
 
-    .IsFull(_WriteDataFull),
-    .IsEmpty(_WriteDataEmpty)
+    .IsFull(),
+    .IsEmpty()
 );
 
 fifo #(
     .BUFSIZE(WRBUFSIZE),
+     .IWIDTH(WRIWIDTH),
     .WWIDTH(AWIDTH)
 ) WriteAddrFIFO (
     .DataIn(WriteAddrIn),
@@ -119,6 +117,7 @@ fifo #(
 
 fifo #(
     .BUFSIZE(RDBUFSIZE),
+     .IWIDTH(RDIWIDTH),
     .WWIDTH(DWIDTH)
 ) ReadDataFIFO (
     .DataIn(MemReadData),
@@ -127,12 +126,14 @@ fifo #(
     .ClkIn(PushReadData),
     .ClkOut(ReadDataClkOut),
 
-    .IsFull(_ReadDataFull),
-    .IsEmpty(_ReadDataEmpty)
+    .IsFull(),
+    .IsEmpty(ReadDataQueueEmpty)
 );
 
 seqfifo #(
     .BUFSIZE(RDBUFSIZE),
+     .STRIDE(RDSTRIDE),
+     .IWIDTH(RDIWIDTH),
     .WWIDTH(AWIDTH)
 ) ReadAddrFIFO (
     .DataIn(ReadAddrIn),

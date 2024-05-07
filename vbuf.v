@@ -10,18 +10,13 @@ module vbuf #(
 ) (
     input wire PixelClk,
     input wire Blank,
-	 
+     
     input wire[DWIDTH-1:0] ByteIn,
     input wire ByteClkIn,
     output wire[PWIDTH-1:0] VideoOut
 );
 
 localparam PWIDTH = CDEPTH * 3; // pixel width (number of video output pins)
-
-wire _IsFull;
-wire _IsEmpty;
-
-wire _ReadAddrFull;
 
 wire[PWIDTH-1:0] PixelOut;
 
@@ -35,8 +30,8 @@ decomp3to4 #(
     .ClkIn(ByteClkIn),
     .ClkOut(PixelClk),
 
-    .IsFull(_IsFull),
-    .IsEmpty(_IsEmpty)
+    .IsFull(),
+    .IsEmpty()
 );
 
 assign VideoOut = !Blank ? PixelOut : 6'b00_00_00;
