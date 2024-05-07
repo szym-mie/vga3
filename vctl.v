@@ -24,8 +24,9 @@ module vctl #(
 
 initial PixelCnt <= 1'b0;
 initial LineCnt <= 1'b0;
-
-wire NextPack = &PixelCnt[1:0];
+initial AddrOut <= 1'b0;
+initial IsActHorz <= 1'b0;
+initial IsActVert <= 1'b0;
 
 always @(posedge PixelClk) begin
     if (PixelCnt == XMAX) begin
@@ -40,7 +41,7 @@ always @(posedge PixelClk) begin
     if (LineCnt == VDMAX) IsActVert <= 1'b0;
     if (LineCnt == VDMIN) IsActVert <= 1'b1;
 
-    if (NextPack) begin
+    if (PixelCnt[1] && !PixelCnt[0]) begin
         AddrClkOut <= 1'b1;
         if (PixelCnt == XMAX && LineCnt == YMAX) AddrOut <= 1'b0;
         else AddrOut <= AddrOut + 2'b11;

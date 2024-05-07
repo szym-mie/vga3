@@ -68,7 +68,7 @@ wire[AWIDTH-1:0] MemReadAddr;
 wire[DWIDTH-1:0] MemWriteData;
 wire[DWIDTH-1:0] MemReadData;
 
-assign MemDataPort = !MemWriteEnable ? MemWriteData : 1'bz;
+assign MemDataPort = !MemWriteEnable ? MemWriteData : 8'bzzzz_zzzz;
 assign MemReadData = MemDataPort;
 
 assign MemAddrPort = !MemWriteEnable ? MemWriteAddr : MemReadAddr;
@@ -85,7 +85,7 @@ wire WriteReqQueueEmpty;
 
 fifo #(
     .BUFSIZE(WRBUFSIZE),
-     .IWIDTH(WRIWIDTH),
+    .IWIDTH(WRIWIDTH),
     .WWIDTH(DWIDTH)
 ) WriteDataFIFO (
     .DataIn(WriteDataIn),
@@ -100,7 +100,7 @@ fifo #(
 
 fifo #(
     .BUFSIZE(WRBUFSIZE),
-     .IWIDTH(WRIWIDTH),
+    .IWIDTH(WRIWIDTH),
     .WWIDTH(AWIDTH)
 ) WriteAddrFIFO (
     .DataIn(WriteAddrIn),
@@ -132,8 +132,8 @@ fifo #(
 
 seqfifo #(
     .BUFSIZE(RDBUFSIZE),
-     .STRIDE(RDSTRIDE),
-     .IWIDTH(RDIWIDTH),
+    .STRIDE(RDSTRIDE),
+    .IWIDTH(RDIWIDTH),
     .WWIDTH(AWIDTH)
 ) ReadAddrFIFO (
     .DataIn(ReadAddrIn),

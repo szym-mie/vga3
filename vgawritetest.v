@@ -4,7 +4,7 @@
 module vgawritetest;
 
     // Inputs
-    reg MainClkSrc;
+    reg MainClk;
     reg Sclk;
     reg Mosi;
     reg CSel;
@@ -14,26 +14,25 @@ module vgawritetest;
     wire MemWE;
     wire MemOE;
     wire [5:0] ColorOut;
-    wire HsyncOut;
-    wire VsyncOut;
-
-    reg [8:0] Counter = 8'h00;
+    wire HSyncOut;
+    wire VSyncOut;
+    
+    reg [9:0] Cnt = 1'b0;
 
     // Bidirs
     wire [7:0] MemData;
-    
-    assign MemData = Counter[8:1];
+    assign MemData = MemWE ? Cnt[2 +: 8] : 8'bzzzz_zzzz;
 
     // Instantiate the Unit Under Test (UUT)
     vga UUT (
-        .MainClkSrc(MainClkSrc), 
+        .MainClk(MainClk), 
         .MemAddr(MemAddr), 
         .MemData(MemData), 
         .MemWE(MemWE), 
         .MemOE(MemOE), 
         .ColorOut(ColorOut), 
-        .HsyncOut(HsyncOut), 
-        .VsyncOut(VsyncOut), 
+        .HSyncOut(HSyncOut), 
+        .VSyncOut(VSyncOut), 
         .Sclk(Sclk), 
         .Mosi(Mosi), 
         .CSel(CSel)
@@ -71,8 +70,8 @@ module vgawritetest;
     
     initial begin
         // Initialize Clock
-        MainClkSrc = 0;
-        forever #5 MainClkSrc = ~MainClkSrc;
+        MainClk = 0;
+        forever #5 MainClk = ~MainClk;
     end
 
     initial begin
@@ -99,7 +98,7 @@ module vgawritetest;
         send_byte(10, 8'b00000011);
     end
     
-    always @(posedge MainClkSrc) Counter <= Counter + 1'b1;
+    always @(posedge MainClk) Cnt = Cnt + 1'b1;
       
 endmodule
 

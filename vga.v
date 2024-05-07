@@ -185,7 +185,7 @@ vmmu #(
     .MemOutputEnable(MemOE)
 );
 
-// FIXME: add signal to check if new data is present
+// TODO: add signal to check if new data is present
 vbuf #(
     .AWIDTH(`ADDR_WIDTH),
     .DWIDTH(`DATA_WIDTH)

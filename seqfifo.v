@@ -22,7 +22,7 @@ reg[WWIDTH-1:0] DataStart;
 reg[IWIDTH-1:0] IndexOut = 1'b0;
 
 assign IsFull = IndexOut == 1'b0;
-assign IsEmpty = IndexOut == (BUFSIZE - 1'b1);
+assign IsEmpty = IndexOut == BUFSIZE;
 
 always @(posedge ClkIn) DataStart <= DataIn;
 
