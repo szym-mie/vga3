@@ -1,0 +1,29 @@
+.cseg
+.org 0x0
+rjmp _reset
+rjmp _int0
+rjmp _int1
+rjmp _pcint0
+rjmp _pcint1
+rjmp _pcint2
+rjmp _wdt
+rjmp _timer2_compa
+rjmp _timer2_compa
+rjmp _timer2_ovf
+rjmp _timer1_capt
+rjmp _timer1_compa
+rjmp _timer1_compa
+rjmp _timer1_ovf
+rjmp _timer0_compa
+rjmp _timer0_compa
+rjmp _timer0_ovf
+rjmp _spi_stc
+rjmp _usart_rx
+rjmp _usart_udre
+rjmp _usart_tx
+rjmp _adc
+rjmp _ee_rdy
+rjmp _an_cmp
+rjmp _twi
+rjmp _spm_rdy
+
