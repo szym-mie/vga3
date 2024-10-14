@@ -59,7 +59,7 @@ The usage of FIFOs also make the system memory independent of other video circut
 
 As of recent update I've recovered KiCAD schematics and PCB design that contained system memory, SPI input and VGA connector. Those can be found under `kicad` directory.
 
-![main board schematic](kicad\xillinx_vga_spi-schem\xillinx_vga_spi.svg)
+![main board schematic](kicad/xillinx_vga_spi-schem/xillinx_vga_spi.svg)
 
 ## Modules
 
