@@ -16,7 +16,7 @@
         <path d="M-471.3252 1450.3506 L-471.3252 -40.6494 L336.6748 -40.6494 L336.6748 1450.3506 L-471.3252 1450.3506 Z"/>
       </clipPath>
     </defs>
-    <g fill="white" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="translate(481,89)" stroke="white">
+    <g fill="rgb(100,80,80)" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="translate(481,89)" stroke="white">
       <rect x="-481" width="1491" height="808" y="-89" clip-path="url(#clipPath2)" stroke="none"/>
     </g>
     <g fill="rgb(240,240,240)" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,481,89)" stroke="rgb(240,240,240)">

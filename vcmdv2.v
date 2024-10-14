@@ -41,11 +41,11 @@ always @(posedge ByteClkIn) begin
     else begin
         case (State)
             ReadCmdId: begin
-                    case (ByteIn)
+                case (ByteIn)
                     Noop: State <= ReadCmdId;
                     SetAddr: State <= SetAddrPage;
                 endcase
-                end
+            end
             SetAddrPage: begin
                 ReadAddr[AWIDTH-1:16] <= ByteIn[PGPARTSIZE-1:0];
                 State <= SetAddrHigh;
