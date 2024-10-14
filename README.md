@@ -4,7 +4,7 @@
 
 ## Display
 
-This module works in standard VGA mode of 640x480 at 60Hz monitor refresh rate. The picture itself was scaled down to 160x120, but can be reverted to be true 640x480.
+This module works in standard VGA mode of 640x480 at 60Hz monitor refresh rate. The picture itself was scaled down to 320x240, but can be reverted to be true 640x480.
 
 Full specification:
 
@@ -75,7 +75,7 @@ As of recent update I've recovered KiCAD schematics and PCB design that containe
 
 ## Bugs
 
-#### 160x120 picture resolution (unresolved)
+#### 320x240 picture resolution (unsolved)
 
 This was a hardware fault that prevented me from using a full 640x480. It turned out that one of the address lines was busted and it basically could corrupt the whole lower half of the screen. In theory I such issue could be remedied remap that region to an area that didn't use that address line.
 
@@ -83,12 +83,6 @@ This was a hardware fault that prevented me from using a full 640x480. It turned
 
 Due to confusing and just plain wrong schematic of pin headers that was published on Mimas site, one of data lines ended up connected to chip ground. This required an ad hoc jumper wire to be connected to a new location on a pin header, and a previous trace to be cut.
 
-#### Dummy byte write needed after cursor move (unresolved)
-
-One of the biggest issues was the need for dummy write after jumping, due to tricky synchronisation issues, which I was unable to solve before the deadline, but a simple software workaround was enough to make it work again (such method might cause flickering of some pixels, but that depends on the speed of the SPI bus.
-
 ## Example driver code
 
-I made a small driver code sample for ATMega88, but with some tinkering it should run on any AVR microcontroller (you might need to replace SPI functions with ones that actually work with the given hardware though). It displays a simple color pallette, along with an fancy, cool looking (for the given hardware at least) animated speedometer.
-
-Source code can be found in `test_driver` directory.
+### Coming soon
