@@ -4,7 +4,7 @@
 
 ## Display
 
-This module works in standard VGA mode of 640x480 at 60Hz monitor refresh rate. The picture itself was scaled down to 320x240, but can be reverted to be true 640x480.
+This module works in standard VGA mode of 640x480 at 60Hz monitor refresh rate. The picture itself was scaled down to 160x120, but can be reverted to be true 640x480.
 
 Full specification:
 
@@ -75,7 +75,7 @@ As of recent update I've recovered KiCAD schematics and PCB design that containe
 
 ## Bugs
 
-#### 320x240 picture resolution (unsolved)
+#### 160x120 picture resolution (unresolved)
 
 This was a hardware fault that prevented me from using a full 640x480. It turned out that one of the address lines was busted and it basically could corrupt the whole lower half of the screen. In theory I such issue could be remedied remap that region to an area that didn't use that address line.
 
@@ -83,6 +83,10 @@ This was a hardware fault that prevented me from using a full 640x480. It turned
 
 Due to confusing and just plain wrong schematic of pin headers that was published on Mimas site, one of data lines ended up connected to chip ground. This required an ad hoc jumper wire to be connected to a new location on a pin header, and a previous trace to be cut.
 
+#### Dummy byte write needed after cursor move (unresolved)
+
+An annoying issue, this results from tricky synchronization problems when the command to change cursor location is received. I was unable to fix it due to time constraint, instead a software workadround was devised, by writing a dummy byte just after `vga_set_xy`. This solution is not perfect and can cause flickering, depending on SPI data rate.
+
 ## Example driver code
 
-### Coming soon
+A simple test driver code for ATMega88 (and its derivitives) can be found in `test_driver` directory. This test includes a simple color pallette pattern and a fancy, animated analog speedometer.
