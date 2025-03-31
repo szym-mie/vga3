@@ -1,6 +1,7 @@
 # VGA FPGA Video Card implementation
 
 ![high level overview](vga3_high_level.svg)
+![recording](video_card.gif)
 
 ## Display
 
@@ -89,4 +90,6 @@ An annoying issue, this results from tricky synchronization problems when the co
 
 ## Example driver code
 
-A simple test driver code for ATMega88 (and its derivitives) can be found in `test_driver` directory. This test includes a simple color pallette pattern and a fancy, animated analog speedometer.
+A simple test driver code for ATMega88 (and its derivitives) can be found in `test_driver` directory. This test includes a simple color pallette pattern and animated analog speedometer.
+
+The other example is included as a submodule [`vga_snake`](https://github.com/szym-mie/vga_snake) and it's a snake game demo written in C.
